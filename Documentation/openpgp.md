@@ -1,5 +1,5 @@
 
-# OpenPGP Signing
+# OpenPGP signing
 
 The `matchbox` OpenPGP signature endpoints serve detached binary and ASCII armored signatures of rendered configs, if enabled. Each config endpoint has corresponding signature endpoints, typically suffixed with `.sig` or `.asc`.
 
@@ -25,27 +25,33 @@ Verify a signature response and config response from the command line using the 
 
 **Warning: The test fixture keyring is for examples only.**
 
-    $ gpg --homedir sign/fixtures --verify sig_file response_file
-    gpg: Signature made Mon 08 Feb 2016 11:37:03 PM PST using RSA key ID 9896356A
-    gpg: sign/fixtures/trustdb.gpg: trustdb created
-    gpg: Good signature from "Fake Bare Metal Key (Do not use) <do-not-use@example.com>"
-    gpg: WARNING: This key is not certified with a trusted signature!
-    gpg:          There is no indication that the signature belongs to the owner.
-    Primary key fingerprint: BE2F 12BC 3642 2594 570A  CCBB 8DC4 2020 9896 356A
+```sh
+$ gpg --homedir sign/fixtures --verify sig_file response_file
+gpg: Signature made Mon 08 Feb 2016 11:37:03 PM PST using RSA key ID 9896356A
+gpg: sign/fixtures/trustdb.gpg: trustdb created
+gpg: Good signature from "Fake Bare Metal Key (Do not use) <do-not-use@example.com>"
+gpg: WARNING: This key is not certified with a trusted signature!
+gpg:          There is no indication that the signature belongs to the owner.
+Primary key fingerprint: BE2F 12BC 3642 2594 570A  CCBB 8DC4 2020 9896 356A
+```
 
-## Signing Key Generation
+## Generate signing key
 
 Create a signing key or subkey according to your requirements and security policies. Here are some basic [guides](https://coreos.com/rkt/docs/latest/signing-and-verification-guide.html).
 
 ### gpg
 
-    mkdir -m 700 path/in/vault
-    gpg --homedir path/in/vault --expert --gen-key
-    ...
+```sh
+$ mkdir -m 700 path/in/vault
+$ gpg --homedir path/in/vault --expert --gen-key
+...
+```
 
 ### gpg2
 
-    mkdir -m 700 path/in/vault
-    gpg2 --homedir path/in/vault --expert --gen-key
-    ...
-    gpg2 --homedir path/in/vault --export-secret-key KEYID > path/in/vault/secring.gpg
+```sh
+$ mkdir -m 700 path/in/vault
+$ gpg2 --homedir path/in/vault --expert --gen-key
+...
+$ gpg2 --homedir path/in/vault --export-secret-key KEYID > path/in/vault/secring.gpg
+```

@@ -1,4 +1,4 @@
-# Kubernetes (with rkt)
+# Kubernetes with rkt
 
 The `rktnetes` example provisions a 3 node Kubernetes v1.5.2 cluster with [rkt](https://github.com/coreos/rkt) as the container runtime. The cluster has one controller, two workers, and TLS authentication. An etcd cluster backs Kubernetes and coordinates CoreOS auto-updates (enabled for disk installs).
 
@@ -19,18 +19,22 @@ The [examples](../examples) statically assign IP addresses to libvirt client VMs
 * [rktnetes-install](../examples/groups/rktnetes-install) - Install a Kubernetes cluster to disk
 * [Lab examples](https://github.com/dghubble/metal) - Lab hardware examples
 
-### Assets
+## Assets
 
 Download the CoreOS image assets referenced in the target [profile](../examples/profiles).
 
-    ./scripts/get-coreos stable 1235.9.0 ./examples/assets
+```sh
+$ ./scripts/get-coreos stable 1235.9.0 ./examples/assets
+```
 
 Optionally, add your SSH public key to each machine group definition [as shown](../examples/README.md#ssh-keys).
 
 Generate a root CA and Kubernetes TLS assets for components (`admin`, `apiserver`, `worker`) with SANs for `node1.example.com`, etc.
 
-    rm -rf examples/assets/tls
-    ./scripts/tls/k8s-certgen
+```sh
+$ rm -rf examples/assets/tls
+$ ./scripts/tls/k8s-certgen
+```
 
 **Note**: TLS assets are served to any machines which request them, which requires a trusted network. Alternately, provisioning may be tweaked to require TLS assets be securely copied to each host.
 
@@ -44,33 +48,39 @@ Client machines should boot and provision themselves. Local client VMs should ne
 
 [Install kubectl](https://coreos.com/kubernetes/docs/latest/configure-kubectl.html) on your laptop. Use the generated kubeconfig to access the Kubernetes cluster created on rkt `metal0` or `docker0`.
 
-    $ KUBECONFIG=examples/assets/tls/kubeconfig
-    $ kubectl get nodes
-    NAME                STATUS    AGE
-    node1.example.com   Ready     3m
-    node2.example.com   Ready     3m
-    node3.example.com   Ready     3m
+```sh
+$ KUBECONFIG=examples/assets/tls/kubeconfig
+$ kubectl get nodes
+NAME                STATUS    AGE
+node1.example.com   Ready     3m
+node2.example.com   Ready     3m
+node3.example.com   Ready     3m
+```
 
 Get all pods.
 
-    $ kubectl get pods --all-namespaces
-    NAMESPACE     NAME                                        READY     STATUS    RESTARTS   AGE
-    kube-system   heapster-v1.2.0-4088228293-k3yn8            2/2       Running   0          3m
-    kube-system   kube-apiserver-node1.example.com            1/1       Running   0          4m
-    kube-system   kube-controller-manager-node1.example.com   1/1       Running   0          3m
-    kube-system   kube-dns-v19-l2u8r                          3/3       Running   0          4m
-    kube-system   kube-proxy-node1.example.com                1/1       Running   0          3m
-    kube-system   kube-proxy-node2.example.com                1/1       Running   0          3m
-    kube-system   kube-proxy-node3.example.com                1/1       Running   0          3m
-    kube-system   kube-scheduler-node1.example.com            1/1       Running   0          3m
-    kube-system   kubernetes-dashboard-v1.4.1-0iy07           1/1       Running   0          4m
+```sh
+$ kubectl get pods --all-namespaces
+NAMESPACE     NAME                                        READY     STATUS    RESTARTS   AGE
+kube-system   heapster-v1.2.0-4088228293-k3yn8            2/2       Running   0          3m
+kube-system   kube-apiserver-node1.example.com            1/1       Running   0          4m
+kube-system   kube-controller-manager-node1.example.com   1/1       Running   0          3m
+kube-system   kube-dns-v19-l2u8r                          3/3       Running   0          4m
+kube-system   kube-proxy-node1.example.com                1/1       Running   0          3m
+kube-system   kube-proxy-node2.example.com                1/1       Running   0          3m
+kube-system   kube-proxy-node3.example.com                1/1       Running   0          3m
+kube-system   kube-scheduler-node1.example.com            1/1       Running   0          3m
+kube-system   kubernetes-dashboard-v1.4.1-0iy07           1/1       Running   0          4m
+```
 
 ## Kubernetes Dashboard
 
 Access the Kubernetes Dashboard with `kubeconfig` credentials by port forwarding to the dashboard pod.
 
-    $ kubectl port-forward kubernetes-dashboard-v1.4.1-SOME-ID 9090 -n=kube-system
-    Forwarding from 127.0.0.1:9090 -> 9090
+```sh
+$ kubectl port-forward kubernetes-dashboard-v1.4.1-SOME-ID 9090 -n=kube-system
+Forwarding from 127.0.0.1:9090 -> 9090
+```
 
 Then visit [http://127.0.0.1:9090](http://127.0.0.1:9090/).
 

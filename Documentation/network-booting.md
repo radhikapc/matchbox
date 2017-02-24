@@ -1,5 +1,5 @@
 
-# Network Boot Environments
+# Network boot environments
 
 This guide reviews network boot protocols and the different ways client machines can be PXE booted.
 
@@ -13,7 +13,7 @@ At power-on, if a client machine's BIOS or UEFI boot firmware is set to perform 
 
 The network environment can be set up in a number of ways, which we'll discuss. In the simplest, a PXE-enabled DHCP Server responds with a DHCPOFFER with Options, which include a TFTP server IP ("next server") and the name of an NBP ("boot filename") to download (e.g. pxelinux.0). PXE firmware then downloads the NBP over TFTP and starts it. Finally, the NBP loads configs, scripts, and/or images it requires to run an OS.
 
-### Network Boot Programs
+### Network boot programs
 
 Machines can be booted and configured with CoreOS using several network boot programs and approaches. Let's review them. If you're new to network booting or unsure which to choose, iPXE is a reasonable and flexible choice.
 
@@ -21,8 +21,10 @@ Machines can be booted and configured with CoreOS using several network boot pro
 
 [PXELINUX](http://www.syslinux.org/wiki/index.php/PXELINUX) is a common network boot program which loads a config file from `mybootdir/pxelinux.cfg/`  over TFTP. The file is chosen based on the client's UUID, MAC address, IP address, or a default.
 
-    mybootdir/pxelinux.cfg/b8945908-d6a6-41a9-611d-74a6ab80b83d
-    mybootdir/pxelinux.cfg/default
+```sh
+$ mybootdir/pxelinux.cfg/b8945908-d6a6-41a9-611d-74a6ab80b83d
+$ mybootdir/pxelinux.cfg/default
+```
 
 Here is an example PXE config file which boots a CoreOS image hosted on the TFTP server.
 

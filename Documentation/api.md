@@ -1,17 +1,21 @@
 
 # HTTP API
 
-## iPXE Script
+## iPXE script
 
 Serves a static iPXE boot script which gathers client machine attributes and chainloads to the iPXE endpoint. Use DHCP/TFTP to point iPXE clients to this endpoint as the next-server.
 
-    GET http://matchbox.foo/boot.ipxe
-    GET http://matchbox.foo/boot.ipxe.0   // for dnsmasq
+```
+GET http://matchbox.foo/boot.ipxe
+GET http://matchbox.foo/boot.ipxe.0   // for dnsmasq
+```
 
 **Response**
 
-    #!ipxe
-    chain ipxe?uuid=${uuid}&mac=${mac:hexhyp}&domain=${domain}&hostname=${hostname}&serial=${serial}
+```
+#!ipxe
+chain ipxe?uuid=${uuid}&mac=${mac:hexhyp}&domain=${domain}&hostname=${hostname}&serial=${serial}
+```
 
 Client's booted with the `/ipxe.boot` endpoint will introspect and make a request to `/ipxe` with the `uuid`, `mac`, `hostname`, and `serial` value as query arguments.
 
@@ -19,9 +23,11 @@ Client's booted with the `/ipxe.boot` endpoint will introspect and make a reques
 
 Finds the profile for the machine and renders the network boot config (kernel, options, initrd) as an iPXE script.
 
-    GET http://matchbox.foo/ipxe?label=value
+```
+GET http://matchbox.foo/ipxe?label=value
+```
 
-**Query Parameters**
+**Query parameters**
 
 | Name | Type   | Description     |
 |------|--------|-----------------|
@@ -31,18 +37,22 @@ Finds the profile for the machine and renders the network boot config (kernel, o
 
 **Response**
 
-    #!ipxe
-    kernel /assets/coreos/1235.9.0/coreos_production_pxe.vmlinuz coreos.config.url=http://matchbox.foo:8080/ignition?uuid=${uuid}&mac=${mac:hexhyp} coreos.first_boot=1 coreos.autologin
-    initrd  /assets/coreos/1235.9.0/coreos_production_pxe_image.cpio.gz
-    boot
+```
+#!ipxe
+kernel /assets/coreos/1235.9.0/coreos_production_pxe.vmlinuz coreos.config.url=http://matchbox.foo:8080/ignition?uuid=${uuid}&mac=${mac:hexhyp} coreos.first_boot=1 coreos.autologin
+initrd  /assets/coreos/1235.9.0/coreos_production_pxe_image.cpio.gz
+boot
+```
 
 ## GRUB2
 
 Finds the profile for the machine and renders the network boot config as a GRUB config. Use DHCP/TFTP to point GRUB clients to this endpoint as the next-server.
 
-    GET http://matchbox.foo/grub?label=value
+```
+GET http://matchbox.foo/grub?label=value
+```
 
-**Query Parameters**
+**Query parameters**
 
 | Name | Type   | Description     |
 |------|--------|-----------------|
@@ -52,22 +62,26 @@ Finds the profile for the machine and renders the network boot config as a GRUB 
 
 **Response**
 
-    default=0
-    timeout=1
-    menuentry "CoreOS" {
-    echo "Loading kernel"
-    linuxefi "(http;matchbox.foo:8080)/assets/coreos/1235.9.0/coreos_production_pxe.vmlinuz" "coreos.autologin" "coreos.config.url=http://matchbox.foo:8080/ignition" "coreos.first_boot"
-    echo "Loading initrd"
-    initrdefi "(http;matchbox.foo:8080)/assets/coreos/1235.9.0/coreos_production_pxe_image.cpio.gz"
-    }
+```
+default=0
+timeout=1
+menuentry "CoreOS" {
+echo "Loading kernel"
+linuxefi "(http;matchbox.foo:8080)/assets/coreos/1235.9.0/coreos_production_pxe.vmlinuz" "coreos.autologin" "coreos.config.url=http://matchbox.foo:8080/ignition" "coreos.first_boot"
+echo "Loading initrd"
+initrdefi "(http;matchbox.foo:8080)/assets/coreos/1235.9.0/coreos_production_pxe_image.cpio.gz"
+}
+```
 
 ## Cloud Config
 
 Finds the profile matching the machine and renders the corresponding Cloud-Config with group metadata, selectors, and query params.
 
-    GET http://matchbox.foo/cloud?label=value
+```
+GET http://matchbox.foo/cloud?label=value
+```
 
-**Query Parameters**
+**Query parameters**
 
 | Name | Type   | Description     |
 |------|--------|-----------------|
@@ -77,21 +91,25 @@ Finds the profile matching the machine and renders the corresponding Cloud-Confi
 
 **Response**
 
-    #cloud-config
-    coreos:
-      units:
-        - name: etcd2.service
-          command: start
-        - name: fleet.service
-          command: start
+```yaml
+#cloud-config
+coreos:
+  units:
+    - name: etcd2.service
+      command: start
+    - name: fleet.service
+      command: start
+```
 
 ## Ignition Config
 
 Finds the profile matching the machine and renders the corresponding Ignition Config with group metadata, selectors, and query params.
 
-    GET http://matchbox.foo/ignition?label=value
+```
+GET http://matchbox.foo/ignition?label=value
+```
 
-**Query Parameters**
+**Query parameters**
 
 | Name | Type   | Description     |
 |------|--------|-----------------|
@@ -101,24 +119,28 @@ Finds the profile matching the machine and renders the corresponding Ignition Co
 
 **Response**
 
-    {
-      "ignition": { "version": "2.0.0" },
-      "systemd": {
-        "units": [{
-          "name": "example.service",
-          "enable": true,
-          "contents": "[Service]\nType=oneshot\nExecStart=/usr/bin/echo Hello World\n\n[Install]\nWantedBy=multi-user.target"
-        }]
-      }
-    }
+```json
+{
+  "ignition": { "version": "2.0.0" },
+  "systemd": {
+    "units": [{
+      "name": "example.service",
+      "enable": true,
+      "contents": "[Service]\nType=oneshot\nExecStart=/usr/bin/echo Hello World\n\n[Install]\nWantedBy=multi-user.target"
+    }]
+  }
+}
+```
 
 ## Generic Config
 
 Finds the profile matching the machine and renders the corresponding generic config with group metadata, selectors, and query params.
 
-    GET http://matchbox.foo/generic?label=value
+```
+GET http://matchbox.foo/generic?label=value
+```
 
-**Query Parameters**
+**Query parameters**
 
 | Name | Type   | Description     |
 |------|--------|-----------------|
@@ -128,21 +150,24 @@ Finds the profile matching the machine and renders the corresponding generic con
 
 **Response**
 
-    {
-      “uuid”: “”,
-      “mac”: “52:54:00:a1:9c:ae”,
-      “osInstalled”: true,
-      “rawQuery”: “mac=52:54:00:a1:9c:ae&os=installed”
-    }
-
+```
+{
+  “uuid”: “”,
+  “mac”: “52:54:00:a1:9c:ae”,
+  “osInstalled”: true,
+  “rawQuery”: “mac=52:54:00:a1:9c:ae&os=installed”
+}
+```
 
 ## Metadata
 
 Finds the matching machine group and renders the group metadata, selectors, and query params in an "env file" style response.
 
-    GET http://matchbox.foo/metadata?mac=52-54-00-a1-9c-ae&foo=bar&count=3&gate=true
+```
+GET http://matchbox.foo/metadata?mac=52-54-00-a1-9c-ae&foo=bar&count=3&gate=true
+```
 
-**Query Parameters**
+**Query parameters**
 
 | Name | Type   | Description     |
 |------|--------|-----------------|
@@ -152,17 +177,19 @@ Finds the matching machine group and renders the group metadata, selectors, and 
 
 **Response**
 
-    META=data
-    ETCD_NAME=node1
-    SOME_NESTED_DATA=some-value
-    MAC=52:54:00:a1:9c:ae
-    REQUEST_QUERY_MAC=52:54:00:a1:9c:ae
-    REQUEST_QUERY_FOO=bar
-    REQUEST_QUERY_COUNT=3
-    REQUEST_QUERY_GATE=true
-    REQUEST_RAW_QUERY=mac=52-54-00-a1-9c-ae&foo=bar&count=3&gate=true
+```
+META=data
+ETCD_NAME=node1
+SOME_NESTED_DATA=some-value
+MAC=52:54:00:a1:9c:ae
+REQUEST_QUERY_MAC=52:54:00:a1:9c:ae
+REQUEST_QUERY_FOO=bar
+REQUEST_QUERY_COUNT=3
+REQUEST_QUERY_GATE=true
+REQUEST_RAW_QUERY=mac=52-54-00-a1-9c-ae&foo=bar&count=3&gate=true
+```
 
-## OpenPGP Signatures
+## OpenPGP signatures
 
 OpenPGPG signature endpoints serve detached binary and ASCII armored signatures of rendered configs, if enabled. See [OpenPGP Signing](openpgp.md).
 
@@ -177,8 +204,10 @@ OpenPGPG signature endpoints serve detached binary and ASCII armored signatures 
 
 Get a config and its detached ASCII armored signature.
 
-    GET http://matchbox.foo/ipxe?label=value
-    GET http://matchbox.foo/ipxe.asc?label=value
+```
+GET http://matchbox.foo/ipxe?label=value
+GET http://matchbox.foo/ipxe.asc?label=value
+```
 
 **Response**
 
@@ -197,14 +226,15 @@ NO+p24BL3PHZyKw0nsrm275C913OxEVgnNZX7TQltaweW23Cd1YBNjcfb3zv+Zo=
 
 ## Assets
 
-If you need to serve static assets (e.g. kernel, initrd), `matchbox` can serve arbitrary assets from the `-assets-path`.
+`matchbox` can serve arbitrary assets such as kernel and initrd from the `-assets-path`.
 
-    matchbox.foo/assets/
-    └── coreos
-        └── 1235.9.0
-            ├── coreos_production_pxe.vmlinuz
-            └── coreos_production_pxe_image.cpio.gz
-        └── 1153.0.0
-            ├── coreos_production_pxe.vmlinuz
-            └── coreos_production_pxe_image.cpio.gz
-
+```
+matchbox.foo/assets/
+└── coreos
+    └── 1235.9.0
+        ├── coreos_production_pxe.vmlinuz
+        └── coreos_production_pxe_image.cpio.gz
+    └── 1153.0.0
+        ├── coreos_production_pxe.vmlinuz
+        └── coreos_production_pxe_image.cpio.gz
+```
